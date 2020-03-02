@@ -6,42 +6,65 @@
 
 using namespace std;
 
-int collectSize();
-string * collectData(int,int, string**);
-string * findTags(string**,int&);
-int menu();
-void Random(string**, int, string*, int, string*, int, int&);
-void addOption(string**, int&);
-void removeOption(string**, int);
-void addTag(string**, int, string*, int);
-void removeTag(string**, int, string*, int);
-void editName(string**, int);
-void editTag(string**, int);
-void clearFile(string, string);
-void clear(string**, string*, string*);
+int collectSize(); // finds out how many names you have stored in files, returns the size
 
-string * selectedNames(int&);
-string cleanString(string);
-string * breakDownString(string, int&);
-string * selectedNamesF(string**, int, string*, int, int&);
+string * collectData(int,int, string**); // makes dynamic array containing information collected for saved files
 
-void checkF();
-bool tagCheck(string, string);
-void run(string*, int, int&);
+string * findTags(string**,int&); // reads in the tags saved for a specific name
 
-int commaNumber(string);
-bool tagCheck(string, string);
-string removeString(string, string);
+int menu(); // prints main menu and prompts user to enter their selection, returns their selectioin
 
-void showFullList(string**, int);
-void showSelectedTags(string*, int);
-void showSelectedNames(string*, int);
-bool is_digits(const string&);
-string removeComma(string);
-int subMenu();
-void subMain();
-void showBackups();
-void showBackups2();
+void Random(string**, int, string*, int, string*, int, int&); // decides how or if to call 'run'
+
+void addOption(string**, int&); // allows user to add a new item name
+
+void removeOption(string**, int); // allows user to remove an existing item
+
+void addTag(string**, int, string*, int); // allows user to add tag(s) for an existing item
+
+void removeTag(string**, int, string*, int); // allows user to remove tag(s) for an existing item
+
+void editName(string**, int); // allows user to edit the name of an existing item
+
+void editTag(string**, int); // allows user to edit a tag of an existing item
+
+void clearFile(string, string); // purges the content in a file
+
+void clear(string**, string*, string*); // deletes all dynamic arrays
+
+string cleanString(string); // correctly formats userinput with spaces and commas
+
+string * breakDownString(string, int&); // splits a master string into sub strings based on where commas are
+
+string * selectedNamesF(string**, int, string*, int, int&); // returns a dynamic array of the items that are selected based on the selected tags
+
+void checkF(); // makes sure that all the needed files exist, if they do not exist it will create them
+
+void run(string*, int, int&); // picks a random item from the selected items
+
+int commaNumber(string); // returns the number of commas that exist in a string
+
+bool tagCheck(string, string); // checks if any of the tags that exist for a specific item match with any of the selected tags
+
+string removeString(string, string); // removes a substring from a master string if it exist in the master string
+
+void showFullList(string**, int); // shows all possible options 
+
+void showSelectedTags(string*, int); // shows the tags that are currently selected
+
+void showSelectedNames(string*, int); // shows the item names that are currently selected based on the selected tags
+
+bool is_digits(const string&); // checks if a string is all digits
+
+string removeComma(string); // removes unneed commas
+
+int subMenu(); // prints the sub menu and promts user to their selection, returns their selection
+
+void subMain(); // filters users selections for the sub menu
+
+void showBackups(); // backs up the names of items
+
+void showBackups2(); // backs up the tags of items
 
 int main()
 {
@@ -65,8 +88,6 @@ int main()
 			switch (menu())
 			{
 			case 1:
-				if(!size)
-					break;
 				Random(list, size, selectedTags, selectedTagSize, selectedNames, selectedNameSize, penalty); 
 				break;
 			case 2:
@@ -93,7 +114,7 @@ int main()
 			case 9:
 				go = 0;
 				break;
-			case 1897:
+			case 1234:
 				subMain();
 				break;
 			default: 
@@ -519,16 +540,28 @@ string * selectedNamesF(string ** list, int size, string * selectedTags, int sel
 
 void checkF()
 {
-	ifstream test; string name[8];
+	ifstream test; string name[14];
+	ofstream create;
 	name[0] = "names.txt"; name[1] = "nameSave.txt"; name[2] = "save.txt"; name[3] = "selectedTags.txt";
 	name[4] = "selectedTagSave.txt"; name[5] = "string.txt"; name[6] = "tag.txt"; name[7] = "tagSave.txt";
-	for(int i = 0; i < 8; i++)
+	name[8] = "nameBackup.txt"; name[9] = "owner.txt"; name[10] = "password.txt"; name[11] = "penalty.txt"; 
+	name[12] = "selectedTagsBackup.txt"; name[13] = "tagBackup.txt"; 
+	for(int i = 0; i < 14; i++)
 	{
 		test.open(name[i]);
 		if(test.fail())
 		{
-			cout << name[i] << " failed to open" << endl;
-			exit(0);
+			create.open(name[i]);
+			if(name[i] == "penalty.txt")
+			{
+				create << 0 << endl << 1;
+			}
+			if(name[i] == "owner.txt")
+			{
+				create << "noName";
+			}
+			create.close();
+			cout << name[i] << " created" << endl;
 		}
 		test.close();
 	}
@@ -623,7 +656,7 @@ void subMain()
 					ofstream purge;
 					purge.open("names.txt"); purge.close();
 					purge.open("tag.txt"); purge.close();
-					cout << "  Name and tag files purged" << endl << endl;
+					cout << "Name and tag files purged" << endl << endl;
 				}
 				break;
 			}
